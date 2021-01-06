@@ -22,6 +22,22 @@ in this readme when making adjustments.
 ### Adding this bot to your discord guild
 
 ### Configuring the bot for your needs
+This bot is built with the intention that it can work in _any_ discord server. As such,
+some information is needed in order for the bot to execute properly and perform its timed
+tasks. Typing `!config` will show you something along the following:
+
+So what needs to be set? 
+1. Announcement Channel: Use `!channel` to set this. Ex: `!channel #hawkey`
+    1. All commands, other than configuration commands, will fail without this
+2. Role Permissions (optional): Use `!permission` to set this per role. 
+    Ex: `!permission @editors configure`
+    1. The level of permission must be set to one of the following:
+    ```
+    Configure: Allows a role to configure the bot as well as all other permissions
+    Watch: Allows a role to select a game for "watching" as well as recieves interact permissions
+    Interact: Allows a user to interact with the bot
+    ```
+3. Daily Schedule (optional): Use `!daily` to toggle daily schedule posts
 
 ### Additional info
 
