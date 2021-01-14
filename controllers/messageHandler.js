@@ -4,17 +4,17 @@ const MAIN_LAYOUT = {
   title: '',
   desc: '',
   fields: [],
-  footer: ''
-}
+  footer: '',
+};
 
 const FIELD_LAYOUT = {
   name: '',
   value: '',
-  inline: false
-}
+  inline: false,
+};
 
 class MessageHandler {
-  
+
   static embedBuilder(title, desc, fields, footer) {
     const embed = new Discord.MessageEmbed()
       .setColor('#0099ff')
@@ -31,16 +31,16 @@ class MessageHandler {
       title,
       desc,
       fields,
-      footer
-    }
+      footer,
+    };
   }
 
-  genField(name, value, inline=false) { 
+  genField(name, value, inline = false) {
     return {
       name,
       value,
-      inline
-    }
+      inline,
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -75,5 +75,5 @@ class MessageHandler {
 module.exports = {
   MessageHandler,
   MAIN_LAYOUT,
-  FIELD_LAYOUT
+  FIELD_LAYOUT,
 };

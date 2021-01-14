@@ -12,14 +12,14 @@ const { Guild } = require('./db');
 const { MessageHandler } = require('./controllers/messageHandler');
 
 // Global Variables
-const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 const daily = new Daily();
 const debug = process.argv.includes('--verbose') || process.argv.includes('-v');
 const logger = winston.createLogger({
   transports: [
-    new winston.transports.Console({level: debug ? 'debug' : 'info'})
+    new winston.transports.Console({ level: debug ? 'debug' : 'info' }),
   ],
-  format: winston.format.printf(log => `[${log.level.toUpperCase()}] - ${log.message}`)
+  format: winston.format.printf(log => `[${log.level.toUpperCase()}] ${new Date().toLocaleString()} - ${log.message}`),
 });
 const msgHandler = new MessageHandler();
 const prefix = '!';
@@ -48,8 +48,7 @@ client.on('ready', async () => {
 });
 
 // Channel Deletion Handler, for ensuring the DB is updated when a channel is removed
-client.on('channelDelete', async(channel) => {
-  console.log(channel);
+client.on('channelDelete', async (channel) => {
   const dbChan = await Guild.prototype.findGuild(['ChannelID'], channel.guild.id);
   if (channel.id === dbChan.dataValues.ChannelID) {
     logger.debug(`Guild ${channel.guild.id} just deleted their set channel ${channel.name}`);
@@ -83,7 +82,7 @@ client.on('message', async (msg) => {
     return;
   }
   try {
-    client.commands.get(command).execute(msg, args, Guild, ownerID, msgHandler, logger)
+    client.commands.get(command).execute(msg, args, Guild, ownerID, msgHandler, logger);
   } catch (err) {
     logger.error(`Error executing command ${command}: ${err}`);
     msg.reply('Error in command execution!');
@@ -117,7 +116,7 @@ client.on('roleDelete', async (role) => {
 });
 
 // Role Update Handler, for ensuring the DB is updated whena role is changed
-client.on('roleUpdate', async(oldRole, newRole) => {
+client.on('roleUpdate', async (oldRole, newRole) => {
   await Guild.prototype.updateRoleID(oldRole.id, newRole.id, oldRole.guild.id);
   logger.debug(`${oldRole.name} (if existed in DB) updated to ${newRole.name} for guild ${oldRole.guild.id}`);
 });

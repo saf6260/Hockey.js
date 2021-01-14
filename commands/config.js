@@ -17,14 +17,14 @@ module.exports = {
     const channelID = DBGuild.get('ChannelID');
     let channelName;
     if (channelID === undefined || channelID === null) {
-      channelName = 'Undefined. Please set this!'
+      channelName = 'Undefined. Please set this!';
     } else {
       channelName = guild.channels.cache.get(channelID);
     }
     const fields = [];
     fields.push(handler.genField('Announcement channel:', channelName, true));
-    fields.push(handler.genField('Daily updates:', DBGuild.get('Daily') ? 'On':'Off', true));
-    const rolePermissions = await gatherPermissions('all', Guild, guild.id);
+    fields.push(handler.genField('Daily updates:', DBGuild.get('Daily') ? 'On' : 'Off', true));
+    const rolePermissions = await gatherPermissions('any', Guild, guild.id);
     let systemRolePerms = '';
     rolePermissions.forEach((perm) => {
       const sysRole = guild.roles.cache.get(perm.dataValues.RoleID);
@@ -40,5 +40,5 @@ module.exports = {
     }
     const resp = handler.genMain(TITLE, DESC, fields, FOOTER);
     handler.messageResponse(msg, resp);
-  }
-}
+  },
+};

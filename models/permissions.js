@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Permissions', {
     },
     get() {
       return this.getDataValue('GuildID');
-    }
+    },
   },
   RoleID: {
     type: DataTypes.STRING,
@@ -17,13 +17,13 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Permissions', {
     allowNull: false,
     get() {
       return this.getDataValue('RoleID');
-    }
+    },
   },
   PermLevel: {
     type: DataTypes.STRING,
     allowNull: false,
     get() {
       return this.getDataValue('PermLevel');
-    }
+    },
   },
 });

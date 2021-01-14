@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Watch', {
     },
     get() {
       return this.getDataValue('GuildID');
-    }
+    },
   },
   GameID: {
     type: DataTypes.STRING,
@@ -17,21 +17,21 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Watch', {
     primaryKey: true,
     get() {
       return this.getDataValue('GameID');
-    }
+    },
   },
   GameStart: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     get() {
       return this.getDataValue('GameStart');
-    }
+    },
   },
   GameTime: {
     type: DataTypes.DATE,
     allowNull: false,
     get() {
       return this.getDataValue('GameTime');
-    }
+    },
   },
   GameUpdate: {
     type: DataTypes.DATE,
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Watch', {
     defaultValue: DataTypes.NOW,
     get() {
       return this.getDataValue('GameUpdate');
-    }
+    },
   },
   UpdateWindow: {
     type: DataTypes.INTEGER,
@@ -47,6 +47,6 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Watch', {
     defaultValue: 3,
     get() {
       return this.getDataValue('PermLevel');
-    }
-  }
+    },
+  },
 });

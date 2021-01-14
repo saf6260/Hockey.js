@@ -12,7 +12,7 @@ module.exports = {
     }
     let channel = args[0];
     if (channel.includes('<#')) {
-      channel = channel.split("<#")[1].split(">")[0];
+      channel = channel.split('<#')[1].split('>')[0];
     }
     const guild = msg.channel.guild;
     const DBGuild = await Guild.prototype.findGuild(['ChannelID', 'OwnerID'], guild.id);
@@ -20,12 +20,30 @@ module.exports = {
       logger.error(`GuildID: ${guild.id} not in DB!`);
       return;
     }
+    let hasPerm = false;
     if (ownerID === msg.author.id) {
-      logger.debug("Channel command ran by server owner");
+      logger.debug('Channel command ran by server owner');
+      hasPerm = true;
+    } else {
+      const permissions = await gatherPermissions(PERMISSION_LEVELS.Configure, Guild, guild.id);
+      if (permissions.length === 0) {
+        logger.debug(`Only owner can modify results and ${msg.author.id} is not owner of guild ${guild.id}`);
+      } else {
+        permissions.forEach(async (perm) => {
+          const permID = perm.get('RoleID');
+          if (msg.member.roles.cache.has(perm.get('RoleID'))) {
+            logger.debug(`${msg.author.username} has config perm due to role ${permID} in guild ${guild.id}`);
+            hasPerm = true;
+          }
+        });
+      }
+    }
+    if (hasPerm) {
       const guildChannel = guild.channels.cache.get(channel);
       let resp;
       if (guildChannel === undefined) {
         logger.debug(`Channel ${channel} not found in system`);
+        // send error
       } else {
         logger.debug(`Setting channelID to ${channel} for guild ${guild.id}`);
         await Guild.prototype.setChannel(channel, guild.id);
@@ -33,26 +51,8 @@ module.exports = {
       }
       handler.messageResponse(msg, resp);
       return;
-    }
-    const permissions = await gatherPermissions(PERMISSION_LEVELS.Configure, Guild, guild.id);
-    if (permissions.length === 0) {
-      logger.debug("Only owner can modify results");
     } else {
-      logger.debug(`Other users found with permissions: ${permissions}`);
+      // send lacking permission response
     }
-    console.log(msg);
-    console.log(permissions);
-    console.log(DBGuild);
-  //   const fields = [];
-  //   fields.push(handler.genField('Announcement channel:', channelName, true));
-  //   fields.push(handler.genField('Daily updates:', DBGuild.get('Daily') ? 'On':'Off', true));
-  //   if (msg.author.id === ownerID) {
-  //     fields.push(handler.genField('Permissions:', 'You have permissions to update'));
-  //   } else {
-  //     fields.push(handler.genField('Permissions:', 'Please talk to your server owner for setup'));
-  //   }
-  //   const resp = handler.genMain(TITLE, DESC, fields, FOOTER);
-  //   handler.messageResponse(msg, resp);
-  // }
-  }
-}
+  },
+};

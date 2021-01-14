@@ -4,7 +4,7 @@ const winston = require('winston');
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
-    //new winston.transports.File({ filename: 'AL_db.log', level: 'debug' }),
+    // new winston.transports.File({ filename: 'AL_db.log', level: 'debug' }),
   ],
   format: winston.format.printf((log) => `[${log.level.toUpperCase()}] ${new Date().toLocaleString()} - ${log.message}`),
 });
@@ -35,36 +35,43 @@ Guild.prototype.findGuild = async (attributes, GuildID) => {
     attributes,
     where: { GuildID },
   });
+  if (guild === null) {
+    return undefined;
+  }
   if (guild.length === 0) {
     return undefined;
   }
   return guild;
-}
+};
 
 Guild.prototype.setChannel = async (ChannelID, GuildID) => {
-  return await Guild.update({ ChannelID }, { where: { GuildID }});
-}
+  return await Guild.update({ ChannelID }, { where: { GuildID } });
+};
 
-Guild.prototype.gatherPermissions = async (attributes, GuildID) => {
+Guild.prototype.gatherPermissions = async (attributes, where) => {
   const permissions = await Permissions.findAll({
     attributes,
-    where: { GuildID }
+    where,
   });
   return permissions;
-}
+};
 
 Guild.prototype.adjustPermission = async (RoleID, PermLevel, GuildID) => {
   return await Permissions.upsert({ RoleID, PermLevel, GuildID });
-}
+};
 
 Guild.prototype.updateRoleID = async (OldRoleID, NewRoleID, GuildID) => {
   return await Permissions.update({ RoleID: NewRoleID },
-    { where: { RoleID: OldRoleID, GuildID } }
+    { where: { RoleID: OldRoleID, GuildID } },
   );
-}
+};
+
+Guild.prototype.removePermission = async (RoleID, GuildID) => {
+  return await Permissions.destroy({ where: { RoleID, GuildID } });
+};
 
 Guild.prototype.removeRoleID = async (RoleID, GuildID) => {
   return await Permissions.destroy({ where: { RoleID, GuildID } });
-}
+};
 
 module.exports = { Guild };

@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Guilds', {
     allowNull: false,
     get() {
       return this.getDataValue('GuildID');
-    }
+    },
   },
   OwnerID: {
     type: DataTypes.STRING,
@@ -14,19 +14,26 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Guilds', {
     allowNull: false,
     get() {
       return this.getDataValue('OwnerID');
-    }
+    },
   },
   ChannelID: {
     type: DataTypes.STRING,
     get() {
       return this.getDataValue('ChannelID');
-    }
+    },
   },
   Daily: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     get() {
       return this.getDataValue('Daily');
-    }
+    },
+  },
+  DailyTime: {
+    type: DataTypes.DATE,
+    defaultValue: new Date().setUTCHours(12, 0, 0, 0),
+    get() {
+      return this.getDataValue('DailyTime');
+    },
   },
 });
