@@ -10,6 +10,7 @@ const fs = require('fs');
 const Daily = require('./controllers/daily');
 const { Guild } = require('./db');
 const { MessageHandler } = require('./controllers/messageHandler');
+const { checkInteraction } = require('./util');
 
 // Global Variables
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
@@ -75,6 +76,9 @@ client.on('message', async (msg) => {
     ownerID = guild.ownerID;
   } else {
     ownerID = ownerID.get('OwnerID');
+  }
+  if (ownerID !== msg.author.id && !checkInteraction(msg, Guild, guild.id, logger)) {
+    return;
   }
   const args = msg.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();

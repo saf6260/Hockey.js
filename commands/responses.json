@@ -1,0 +1,79 @@
+{
+  "help": {
+    "title": "Welcome to NHL.js! A discord.js/nhl.com bot",
+    "desc": "Here's how to work with the bot",
+    "fields": [
+      {
+        "name": "!config",
+        "value": "This displays the current system setup.",
+        "inline": true
+      },
+      {
+        "name": "!channel [channelID or #channel]",
+        "value": "This establishes the channel to use for watch updates (required to be set!).",
+        "inline": true
+      },
+      {
+        "name": "!permission [@role or roleID] [level]",
+        "value": "This adjusts (adds and removes) permissions from roles. Call !permission -h for more info.",
+        "inline": true
+      },
+      {
+        "name": "!daily",
+        "value": "This toggles the daily schedule updates (default is set to off)",
+        "inline": true
+      },
+      {
+        "name": "!help",
+        "value": "Shows this help message (but you've figured that out)",
+        "inline": true
+      }
+    ],
+    "footer": "Enjoy! Please let us know of issues by vising our github"
+  },
+  "permissionHelp": {
+    "title": "Permissions, aren't they fun?",
+    "desc": "Here's how to work with them for this bot",
+    "fields": [
+      {
+        "name": "Level: configure",
+        "value": "This allows a role to gain configuration access of the bot as well as all other permissions",
+        "inline": true
+      },
+      {
+        "name": "Level: watch",
+        "value": "This allows a role to gain the ability to request games to be 'watched'",
+        "inline": true
+      },
+      {
+        "name": "Level: interact",
+        "value": "This allows a role to interact with the bot",
+        "inline": true
+      },
+      {
+        "name": "Level: none",
+        "value": "When specified, this removes previously established permissions for a role",
+        "inline": true
+      }
+    ],
+    "footer": "Enjoy! Please let us know of issues by vising our github"
+  },
+  "errorParams": {
+    "title": "Whoops, I think somethings missing...",
+    "desc": "Field(s) may be missing/invalid for this command. See !help for clarification",
+    "fields": [],
+    "footer": "Enjoy! Please let us know of issues by vising our github"
+  },
+  "errorExecution": {
+    "title": "Well shoot",
+    "desc": "Looks like we really wiffed on that slapshot, an internal error ocurred",
+    "fields": [],
+    "footer": "Please reach out to our github if the issue persists"
+  },
+  "errorPermissions": {
+    "title": "Hey bud go give your balls a tug",
+    "desc": "Yous guys don'ts haves permissions fors thats",
+    "fields": [],
+    "footer": "Please reach out to our github if this is incorrect"
+  }
+}

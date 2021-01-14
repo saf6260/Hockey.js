@@ -1,18 +1,28 @@
-const { PERMISSION_LEVELS } = require('../util');
+const fs = require('fs');
+const { PERMISSION_LEVELS, checkConfigLevel } = require('../util');
+const { RESPONSE_FILE } = process.env;
 
 module.exports = {
   name: 'permission',
   description: 'Command for setting the permissions of a role',
+  // eslint-disable-next-line no-unused-vars
   async execute(msg, args, Guild, ownerID, handler, logger) {
+    const guild = msg.channel.guild;
+    const responseData = JSON.parse(fs.readFileSync(RESPONSE_FILE));
     if (args.length < 2) {
+      if (args.length > 0 && args[0] == '-h') {
+        logger.debug(`Sending help response for permission command to guild ${guild.id}`);
+        handler.messageResponse(msg, responseData.permissionHelp);
+        return;
+      }
       logger.debug('Not enough arguments supplied for permission command');
-      // send error message
+      handler.messageResponse(msg, responseData.errorParams);
       return;
     }
-    const guild = msg.channel.guild;
     const DBGuild = await Guild.prototype.findGuild(['ChannelID', 'Daily'], guild.id);
     if (DBGuild === undefined) {
       logger.error(`GuildID: ${guild.id} not in DB!`);
+      handler.messageResponse(msg, responseData.errorExecution);
       return;
     }
     const commandRole = args[0];
@@ -27,7 +37,12 @@ module.exports = {
     }
     if (systemRole === undefined) {
       logger.debug(`No role in guild ${guild.id} found for ${commandRole}`);
-      // send error message
+      handler.messageResponse(msg, responseData.errorParams);
+      return;
+    }
+    if (ownerID !== msg.author.id && checkConfigLevel(msg, Guild, guild.id, logger)) {
+      logger.debug(`${msg.author.username} doesn't have adequate permissions found for ${commandRole}`);
+      handler.messageResponse(msg, responseData.errorPermissions);
       return;
     }
     const commandLevel = args[1].charAt(0).toUpperCase() + args[1].slice(1);
@@ -36,7 +51,7 @@ module.exports = {
     let footer = '';
     if (level === undefined) {
       logger.debug(`${commandLevel} not a defined configuration level`);
-      // send error message
+      handler.messageResponse(msg, responseData.errorParams);
       return;
     } else if (level === PERMISSION_LEVELS.None) {
       logger.debug(`Removing permissions for ${systemRole.name} in guild ${guild.id}`);
