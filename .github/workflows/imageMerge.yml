@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-      - uses: actions/checkout@master
+        uses: actions/checkout@master
         
       - name: Update SHA
         run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
