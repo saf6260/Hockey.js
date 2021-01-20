@@ -25,7 +25,9 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
         
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      run: doctl registry login --expiry-seconds 600 -t ${{ secrets.DIGITALOCEN_ACCESS_TOKEN }}
+      env: 
+        ACCESS_TOKEN: ${{ secrets.DIGITALOCEN_ACCESS_TOKEN }}
+      run: doctl registry login --expiry-seconds 600 -t "$ACCESS_TOKEN"
     
     - name: Debug display creds
       run: doctl registry repository list
