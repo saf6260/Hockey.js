@@ -1,0 +1,33 @@
+name: Digital Ocean Image Push On Master Merge
+
+on:
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+      - uses: actions/checkout@master
+        
+      - name: Update SHA
+        run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
+        
+      - name: Build container image
+        run: docker build -t registry.digitalocean.com/scottalexfr/hockeyjs:$(echo $GITHUB_SHA | head -c7) .
+      
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+      
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push registry.digitalocean.com/scottalexfr/hockeyjs
