@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const winston = require('winston');
-const Daily = require('./controllers/daily');
 
 const logger = winston.createLogger({
   transports: [
@@ -16,9 +15,9 @@ const sequelize = new Sequelize({
   storage: 'db.sqlite3',
 });
 
-// eslint-disable-next-line no-unused-vars
 const Guild = require('./models/guilds')(sequelize, Sequelize.DataTypes);
 const Permissions = require('./models/permissions')(sequelize, Sequelize.DataTypes);
+// eslint-disable-next-line no-unused-vars
 const Watch = require('./models/watch')(sequelize, Sequelize.DataTypes);
 
 const force = process.argv.includes('--force') || process.argv.includes('-f');
