@@ -40,7 +40,7 @@ module.exports = {
       handler.messageResponse(msg, responseData.errorParams);
       return;
     }
-    if (ownerID !== msg.author.id && checkConfigLevel(msg, Guild, guild.id, logger)) {
+    if (ownerID !== msg.author.id && !checkConfigLevel(msg, Guild, guild.id, logger)) {
       logger.debug(`${msg.author.username} doesn't have adequate permissions found for ${commandRole}`);
       handler.messageResponse(msg, responseData.errorPermissions);
       return;

@@ -8,7 +8,7 @@ module.exports = {
   async execute(msg, args, Guild, ownerID, handler, logger) {
     const guild = msg.channel.guild;
     const responseData = JSON.parse(fs.readFileSync(RESPONSE_FILE));
-    if (ownerID !== msg.author.id && checkConfigLevel(msg, Guild, guild.id, logger)) {
+    if (ownerID !== msg.author.id && !checkConfigLevel(msg, Guild, guild.id, logger)) {
       logger.debug(`${msg.author.username} doesn't have adequate permissions for daily command`);
       handler.messageResponse(msg, responseData.errorPermissions);
       return;
