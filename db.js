@@ -75,7 +75,7 @@ Guild.prototype.removeRoleID = async (RoleID, GuildID) => {
 };
 
 Guild.prototype.getDaily = async (GuildID) => {
-  return await Guild.prototype.findGuild(['Daily', 'DailyTime'], GuildID);
+  return await Guild.prototype.findGuild(['Daily', 'DailyTime', 'DailySent'], GuildID);
 };
 
 Guild.prototype.toggleDaily = async (GuildID) => {
@@ -86,6 +86,23 @@ Guild.prototype.toggleDaily = async (GuildID) => {
 
 Guild.prototype.setDailyTime = async (GuildID, timestamp) => {
   return await Guild.update({ DailyTime: timestamp }, { where: { GuildID } });
+};
+
+Guild.prototype.collectDailys = async () => {
+  const trueDailys = await Guild.findAll({
+    attributes: ['GuildID', 'ChannelID', 'DailyTime', 'DailySent'],
+    where: { Daily: true },
+  });
+  return trueDailys.filter((daily) => daily.get('ChannelID') !== null)
+    .filter((daily) => !daily.get('DailySent'));
+};
+
+Guild.prototype.toggleSent = async (GuildID, sent) => {
+  return await Guild.update({ DailySent: sent }, { where: { GuildID } });
+};
+
+Guild.prototype.resetSent = async () => {
+  return await Guild.update({ DailySent: false }, { where: { DailySent: true } });
 };
 
 module.exports = { Guild };

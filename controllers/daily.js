@@ -16,8 +16,10 @@ const NUMBER_REACTS = {
 class Daily {
   constructor() {
     this.state = {
+      lastPullDate: null,
       messageHandler: new MessageHandler(),
       games: [],
+      gameData: null,
     };
   }
 
@@ -66,24 +68,41 @@ class Daily {
     }
   }
 
-  async fetchSchedule(channel) {
-    const gameData = await FetchHandler.get(`${process.env.BASE_URL}/schedule`, '?date=2021-01-13', '');
-    if (gameData.totalGames !== 0) {
+  async handleDisplay(channel) {
+    if (this.state.games.length !== 0 && this.stategameData !== null) {
       const games = [];
-      gameData.dates[0].games.forEach(async (game) => {
+      const today = new Date();
+      const dateFormat = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+      this.state.games.forEach(async (game) => {
         games.push(await this.genGame(game));
       });
-      const sched = await this.genSchedule(gameData, '2021-01-13');
+      const sched = await this.genSchedule(this.state.gameData, dateFormat);
       sched.fields = games;
-      this.state.games = gameData.dates[0].games;
-      await this.state.messageHandler.channelSend(channel, sched)
-        .then((msg) => {
-          games.forEach((_, i) => {
-            msg.react(NUMBER_REACTS[i + 1]);
-          });
-        });
+      await this.state.messageHandler.channelSend(channel, sched);
     }
+  }
 
+  async fetchSchedule(channel, logger) {
+    const today = new Date();
+    if (today.getDate() === this.state.lastPullDate) {
+      logger.info('Using info already obtained for today for schedule publish');
+      this.handleDisplay(channel);
+      return;
+    }
+    this.state.lastPullDate = today.getDate();
+    const dateFormat = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    logger.info(`Making request to API for day ${dateFormat}`);
+    const gameData = await FetchHandler.get(`${process.env.BASE_URL}/schedule`, `?date=${dateFormat}`, '');
+    if (gameData.totalGames === 0) {
+      logger.debug(`Found 0 games occurring on ${dateFormat}`);
+      this.state.games = [];
+      this.state.gameData = null;
+    } else {
+      logger.debug(`Found ${gameData.totalGames} games occurring on ${dateFormat}`);
+      this.state.games = gameData.dates[0].games;
+      this.state.gameData = gameData;
+      this.handleDisplay(channel);
+    }
   }
 }
 

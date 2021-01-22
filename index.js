@@ -10,7 +10,7 @@ const fs = require('fs');
 const Daily = require('./controllers/daily');
 const { Guild } = require('./db');
 const { MessageHandler } = require('./controllers/messageHandler');
-const { checkInteraction } = require('./util');
+const { checkInteraction, performDBChecks } = require('./util');
 
 // Global Variables
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
@@ -19,6 +19,7 @@ const debug = process.argv.includes('--verbose') || process.argv.includes('-v');
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({ level: debug ? 'debug' : 'info' }),
+    new winston.transports.File({ filename: 'AL.log', level: 'debug' }),
   ],
   format: winston.format.printf(log => `[${log.level.toUpperCase()}] ${new Date().toLocaleString()} - ${log.message}`),
 });
@@ -30,11 +31,31 @@ client.on('error', (m) => logger.error(m));
 
 // Establishing System Commands
 client.commands = new Discord.Collection();
+client.dailySchedules = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 commandFiles.forEach((file) => {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
 });
+
+let tomorrow = null;
+
+const confiureDaily = async () => {
+  const now = new Date();
+  if (tomorrow === null) {
+    tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+  }
+  if (now.getDate() === tomorrow) {
+    await Guild.prototype.resetSent();
+  }
+  await performDBChecks(client, Guild, logger, daily);
+  const nextPull = new Date();
+  nextPull.setMinutes(now.getMinutes() + 15);
+  // Midnight
+  logger.debug(`Waiting ${nextPull - now} ms before next daily config`);
+  setTimeout(confiureDaily, (nextPull - now));
+};
 
 // Base Online Response
 client.on('ready', async () => {
@@ -46,6 +67,7 @@ client.on('ready', async () => {
     status: 'Online',
   });
   logger.info('The bot is online and ready!');
+  confiureDaily();
 });
 
 // Channel Deletion Handler, for ensuring the DB is updated when a channel is removed

@@ -38,10 +38,34 @@ So what needs to be set?
     Interact: Allows a user to interact with the bot
     ```
 3. Daily Schedule (optional): Use `!daily` to toggle daily schedule posts
+    1. Adding a time (Ex: `!daily 8:00`) will set the time of the daily schedule post.
+    Note: all times are based on a 24 hour clock and are EST based.
+    2. Schedules are only sent once a day. So toggling updates on and off will not send multiple
+    schedules. However, if you toggle the scheduler on, the system will recognize the change 
+    within 15 minutes of it happening, and will send a schedule within 15 minutes. 
 
 ### Additional info
+This bot is built under the condition that the schedule for the NHL does not change. If a change
+to the schedule occurs, the bot *will not* recognize it. The only way this *could* happen is if 
+no schedules have been sent for the day and the schedule change occurs. However, this is highly
+unlikely given the default schedule post of 7 AM EST. The developers may be able to look into 
+how to make adjustments, but this is a low priority feature.
 
 ## Development
+This bot is considered to be in *beta* versioning. The following features must be completed 
+before an official V1 release will occur. This means that there will most likely be bugs, 
+changing options, and potentially unclear information on execution until the v1 release occurs.
+The V1 features are as follows:
+[x] Completion of base configuration and role permissions
+[x] Completion of daily schedule postings and daily toggle controls
+[] Completion of an automated deployment track
+[] Completion of the 'watch' feature, allowing text-based messaging for game updates
+[] Completion of the following query functionalities:
+    [] League standings
+    [] Team information
+    [] Player information
+    [] Player leaderboards, including top goal scores, top assists, top saves, top hits
+    [] Player leaderboards on a weekly basis
 
 ### Local Development 
 

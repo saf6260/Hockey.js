@@ -36,4 +36,11 @@ module.exports = (sequelize, DataTypes) => sequelize.define('Guilds', {
       return this.getDataValue('DailyTime');
     },
   },
+  DailySent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    get() {
+      return this.getDataValue('DailySent');
+    },
+  },
 });

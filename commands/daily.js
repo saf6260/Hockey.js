@@ -45,9 +45,11 @@ module.exports = {
       logger.debug(`${msg.author.username} attempting to toggle daily in guild ${guild.id}`);
       await Guild.prototype.toggleDaily(guild.id);
       const dailyInfo = await Guild.prototype.getDaily(guild.id);
+      const dateInfo = new Date(dailyInfo.get('DailyTime'));
       logger.info(`${msg.author.username} toggled daily to ${dailyInfo.get('Daily')} in guild ${guild.id}`);
-      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${dailyInfo.get('DailyTime')}` : 'Off';
+      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${dateInfo.toTimeString()}` : 'Off';
       fields.push(handler.genField('Adjustments:', `Daily set to ${dailyConfig}`));
+      fields.push(handler.genField('Note:', 'If a schedule hasn\'t been sent today, it may take up to 15 mins to send'));
     }
     await handler.messageResponse(msg, handler.genMain(header, desc, fields, footer));
   },
