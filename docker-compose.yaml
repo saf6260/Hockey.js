@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  hockey-bot:
+    image: saf6260/hockey-js
+    ports:
+      - "443:443"
+    volumes:
+      - db_vol:/usr/app/db.sqlite3
+    env_file:
+      - bot-vars.env
+    command: ['ls', '-la']
+volumes:
+  db_vol:
