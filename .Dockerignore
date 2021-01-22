@@ -2,5 +2,5 @@ node_modules
 .eslintrc.json
 .gitignore
 README.md
-db.sqlite3
+*.sqlite3
 *.env

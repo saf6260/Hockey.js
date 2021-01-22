@@ -13,7 +13,7 @@ module.exports = {
   async execute(msg, _args, Guild, ownerID, handler, logger) {
     const guild = msg.channel.guild;
     const responseData = JSON.parse(fs.readFileSync(RESPONSE_FILE));
-    const DBGuild = await Guild.prototype.findGuild(['ChannelID', 'Daily'], guild.id);
+    const DBGuild = await Guild.prototype.findGuild(['ChannelID', 'Daily', 'DailyTime'], guild.id);
     if (DBGuild === undefined) {
       logger.error(`GuildID: ${guild.id} not in DB!`);
       handler.messageResponse(msg, responseData.errorExecution);
@@ -28,7 +28,10 @@ module.exports = {
     }
     const fields = [];
     fields.push(handler.genField('Announcement channel:', channelName, true));
-    fields.push(handler.genField('Daily updates:', DBGuild.get('Daily') ? 'On' : 'Off', true));
+    const daylyTime = new Date(DBGuild.get('DailyTime'));
+    fields.push(handler.genField('Daily updates:',
+      DBGuild.get('Daily') ? `On @ ${daylyTime.toTimeString()}` : 'Off',
+      true));
     const rolePermissions = await gatherPermissions('any', Guild, guild.id);
     let systemRolePerms = '';
     rolePermissions.forEach((perm) => {

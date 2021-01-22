@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const winston = require('winston');
+const Daily = require('./controllers/daily');
 
 const logger = winston.createLogger({
   transports: [
@@ -25,7 +26,7 @@ logger.debug(`Force set to: ${force}`);
 
 // Add { force: true } to reset the DB every time
 sequelize.sync({ force }).then(async () => {
-  logger.info('Database Synched');
+  logger.info(`Database Ready. Resynced: ${force}`);
 }).catch(logger.error);
 
 Guild.prototype.init = async (GuildID, OwnerID) => Guild.create({ GuildID, OwnerID });
@@ -72,6 +73,20 @@ Guild.prototype.removePermission = async (RoleID, GuildID) => {
 
 Guild.prototype.removeRoleID = async (RoleID, GuildID) => {
   return await Permissions.destroy({ where: { RoleID, GuildID } });
+};
+
+Guild.prototype.getDaily = async (GuildID) => {
+  return await Guild.prototype.findGuild(['Daily', 'DailyTime'], GuildID);
+};
+
+Guild.prototype.toggleDaily = async (GuildID) => {
+  const dailyVals = await Guild.prototype.getDaily(GuildID);
+  return await Guild.update({ Daily: !dailyVals.get('Daily') },
+    { where: { GuildID } });
+};
+
+Guild.prototype.setDailyTime = async (GuildID, timestamp) => {
+  return await Guild.update({ DailyTime: timestamp }, { where: { GuildID } });
 };
 
 module.exports = { Guild };

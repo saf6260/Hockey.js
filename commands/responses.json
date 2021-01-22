@@ -58,6 +58,28 @@
     ],
     "footer": "Enjoy! Please let us know of issues by vising our github"
   },
+  "dailyHelp": {
+    "title": "Want dem updates?",
+    "desc": "Here's how to configure the daily command",
+    "fields": [
+      {
+        "name": "!daily",
+        "value": "This is the base command & just toggles updates on and off",
+        "inline": true
+      },
+      {
+        "name": "!daily -h",
+        "value": "This is the help command; it shows this message",
+        "inline": true
+      },
+      {
+        "name": "!daily HH:MM in 24hr Time (AKA hrs are 0-23)",
+        "value": "This command sets the time (in EST) for when to run the updates. Default is 7 AM",
+        "inline": true
+      }
+    ],
+    "footer": "Need assistance? Reach out on our github"
+  },
   "errorParams": {
     "title": "Whoops, I think somethings missing...",
     "desc": "Field(s) may be missing/invalid for this command. See !help for clarification",

@@ -5,9 +5,9 @@ services:
     ports:
       - "443:443"
     volumes:
-      - db_vol:/usr/app/db.sqlite3
+      - db_vol:/usr/app/
     env_file:
       - bot-vars.env
-    command: ['ls', '-la']
+    command: ['npm', 'start']
 volumes:
   db_vol:
