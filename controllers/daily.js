@@ -1,5 +1,7 @@
 const FetchHandler = require('./fetchHandler');
 const { MessageHandler, MAIN_LAYOUT, FIELD_LAYOUT } = require('./messageHandler');
+const moment = require('moment-timezone');
+moment.tz.setDefault('America/New_York');
 
 const NUMBER_REACTS = {
   1: '1️⃣',
@@ -34,7 +36,7 @@ class Daily {
 
   async genGame(game) {
     const layout = JSON.parse(JSON.stringify(FIELD_LAYOUT));
-    const date = new Date(game.gameDate);
+    const date = new Date(moment(game.gameDate).format());
     layout.name = `${game.teams.away.team.name} @ ${game.teams.home.team.name}`;
     layout.value = `${game.venue.name} * ${date.toLocaleTimeString()} EST`;
     return layout;

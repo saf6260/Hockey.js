@@ -45,10 +45,13 @@ const confiureDaily = async () => {
   const now = new Date(moment().format());
   if (tomorrow === null) {
     tomorrow = new Date(moment().format());
+    logger.debug(`Tomorrow undefined. Setting tomorrow to ${now.getDate() + 1}`);
     tomorrow.setDate(now.getDate() + 1);
   }
   if (now.getDate() === tomorrow) {
+    logger.debug('It is tomorrow. Resetting db');
     await Guild.prototype.resetSent();
+    tomorrow.setDate(now.getDate() + 1);
   }
   await performDBChecks(client, Guild, logger, daily);
   const nextPull = new Date(moment().format());
