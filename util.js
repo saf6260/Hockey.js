@@ -1,8 +1,21 @@
+const moment = require('moment-timezone');
+moment.tz.setDefault('America/New_York');
+
 const PERMISSION_LEVELS = {
   Configure: 'Configure',
   Watch: 'Watch',
   Interact: 'Interact',
   None: 'None',
+};
+
+const DATE_CONFIG = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric',
+  timeZoneName: 'short',
 };
 
 const gatherPermissions = async (level, Guild, guildID) => {
@@ -64,7 +77,7 @@ const guildSchedule = async (client, channel, Guild, guildID, logger, Daily) => 
 };
 
 const determineOffset = async (goalTime) => {
-  const now = new Date();
+  const now = new Date(moment().format());
   const goal = new Date(goalTime);
   goal.setDate(now.getDate());
   goal.setMonth(now.getMonth());
@@ -93,4 +106,11 @@ const performDBChecks = async (client, Guild, logger, Daily) => {
   });
 };
 
-module.exports = { PERMISSION_LEVELS, gatherPermissions, checkConfigLevel, checkInteraction, performDBChecks };
+module.exports = {
+  PERMISSION_LEVELS,
+  gatherPermissions,
+  checkConfigLevel,
+  checkInteraction,
+  performDBChecks,
+  DATE_CONFIG,
+};
