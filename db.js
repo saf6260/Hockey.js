@@ -12,7 +12,7 @@ const logger = winston.createLogger({
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   logging: (msg) => logger.debug(msg),
-  storage: 'db.sqlite3',
+  storage: 'datastore/db.sqlite3',
 });
 
 const Guild = require('./models/guilds')(sequelize, Sequelize.DataTypes);
