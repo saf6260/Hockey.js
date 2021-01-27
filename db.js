@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const winston = require('winston');
+require('dotenv').config();
 
 const logger = winston.createLogger({
   transports: [
@@ -9,10 +10,10 @@ const logger = winston.createLogger({
   format: winston.format.printf((log) => `[${log.level.toUpperCase()}] ${new Date().toLocaleString()} - ${log.message}`),
 });
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
+const sequelize = new Sequelize(`${process.env.POSTGRES_DB}`, `${process.env.POSTGRES_USER}`, `${process.env.POSTGRES_PASSWORD}`, {
+  dialect: 'postgres',
   logging: (msg) => logger.debug(msg),
-  storage: 'datastore/db.sqlite3',
+  host: process.env.POSTGRES_URL,
 });
 
 const Guild = require('./models/guilds')(sequelize, Sequelize.DataTypes);
