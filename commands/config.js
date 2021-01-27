@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { gatherPermissions, DATE_CONFIG } = require('../util');
+const { gatherPermissions } = require('../util');
 const moment = require('moment-timezone');
 moment.tz.setDefault('America/New_York');
 

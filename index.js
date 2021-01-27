@@ -33,30 +33,29 @@ client.on('error', (m) => logger.error(m));
 // Establishing System Commands
 client.commands = new Discord.Collection();
 client.dailySchedules = new Discord.Collection();
+client.lastDay = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 commandFiles.forEach((file) => {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
 });
 
-let tomorrow = null;
-
 const confiureDaily = async () => {
-  const now = new Date(moment().format());
-  if (tomorrow === null) {
-    tomorrow = new Date(moment().format());
-    logger.debug(`Tomorrow undefined. Setting tomorrow to ${now.getDate() + 1}`);
-    tomorrow.setDate(now.getDate() + 1);
+  const now = new Date();
+  if (client.lastDay.length === 0) {
+    client.lastDay.set(now.getDate() + 1, null);
+    logger.debug('Last day was undefined. Setting to tomorrow');
   }
-  if (now.getDate() === tomorrow) {
-    logger.debug('It is tomorrow. Resetting db');
+  if (now.getDate() === client.lastDay.first()) {
     await Guild.prototype.resetSent();
-    tomorrow.setDate(now.getDate() + 1);
+    client.lastDay.delete(client.lastDay.first());
+    client.lastDay.set(now.getDate() + 1, null);
+    logger.debug('Next day check triggered and adjusted to run tomorrow');
   }
   await performDBChecks(client, Guild, logger, daily);
   const nextPull = new Date(moment().format());
   nextPull.setMinutes(now.getMinutes() + 15);
-  logger.debug(`Next pull at: ${nextPull.toLocaleDateString(undefined, DATE_CONFIG)}`);
+  logger.debug(`Next pull at ${nextPull.toLocaleTimeString()}`);
   setTimeout(confiureDaily, (nextPull - now));
 };
 
@@ -129,13 +128,13 @@ client.on('messageReactionAdd', async (react, user) => {
       return;
     }
   }
-  if (react.message.embeds.length !== 0) {
-    const msgEmbed = react.message.embeds[0];
-    if (msgEmbed.title.includes('Schedule')) {
-      const channel = await client.channels.cache.get('795718890395140130');
-      await daily.fetchGameDetails(react.emoji.name, channel);
-    }
-  }
+  // if (react.message.embeds.length !== 0) {
+  //   const msgEmbed = react.message.embeds[0];
+  //   if (msgEmbed.title.includes('Schedule')) {
+  //     const channel = await client.channels.cache.get('795718890395140130');
+  //     await daily.fetchGameDetails(react.emoji.name, channel);
+  //   }
+  // }
 });
 
 // Role Deletion Handler, for ensuring the DB is updated when a role is removed

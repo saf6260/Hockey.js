@@ -1,13 +1,21 @@
 version: "3.9"
 services:
   hockey-bot:
-    image: saf6260/hockey-js
+    build: .
     ports:
       - "443:443"
-    volumes:
-      - db_vol:/usr/app/
     env_file:
       - bot-vars.env
     command: ['npm', 'start']
+  hockey-pg:
+    image: postgres
+    container_name: hockey-db-pg
+    ports:
+    - "5432:5432"
+    env_file:
+      - bot-vars.env
+    volumes:
+      - .env:/docker-entrypoint-initdb.d/.env
+      - ./postgres-data:/var/lib/postgresql/data
 volumes:
   db_vol:
