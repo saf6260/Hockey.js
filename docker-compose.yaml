@@ -4,8 +4,6 @@ services:
     build: .
     ports:
       - "443:443"
-    volumes:
-      - db_vol:/usr/app/datastore/
     env_file:
       - bot-vars.env
     command: ['npm', 'start']
