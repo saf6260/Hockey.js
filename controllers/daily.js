@@ -1,6 +1,7 @@
 const FetchHandler = require('./fetchHandler');
 const { MessageHandler, MAIN_LAYOUT, FIELD_LAYOUT } = require('./messageHandler');
 const moment = require('moment-timezone');
+const { TIME_ZONE, timeString } = require('../util');
 moment.tz.setDefault('America/New_York');
 
 const NUMBER_REACTS = {
@@ -28,7 +29,7 @@ class Daily {
   async genSchedule(games, gameDate) {
     const layout = JSON.parse(JSON.stringify(MAIN_LAYOUT));
     const date = new Date(gameDate);
-    layout.title = `Schedule for ${date.toLocaleDateString()}`;
+    layout.title = `Schedule for ${date.toDateString()}`;
     layout.desc = `There are ${games.totalGames} game${games.totalGames > 1 ? 's' : ''} today!`;
     layout.footer = 'Want further info? Click the # corresponding to the game';
     return layout;
@@ -36,9 +37,9 @@ class Daily {
 
   async genGame(game) {
     const layout = JSON.parse(JSON.stringify(FIELD_LAYOUT));
-    const date = new Date(moment(game.gameDate).format());
+    const date = new Date(moment(game.gameDate).tz(TIME_ZONE).format());
     layout.name = `${game.teams.away.team.name} @ ${game.teams.home.team.name}`;
-    layout.value = `${game.venue.name} * ${date.toLocaleTimeString()} EST`;
+    layout.value = `${game.venue.name} * ${timeString(date)} EST`;
     return layout;
   }
 
@@ -55,7 +56,7 @@ class Daily {
     const home = game.teams.home;
     const date = new Date(game.gameDate);
     layout.title = `${away.team.name} @ ${home.team.name}`;
-    layout.desc = `${game.venue.name} * ${date.toLocaleTimeString()} EST`;
+    layout.desc = `${game.venue.name} * ${timeString(date)} EST`;
     layout.fields.push(await this.genTeamSpecifics(away));
     layout.fields.push(await this.genTeamSpecifics(home));
     layout.footer = '';

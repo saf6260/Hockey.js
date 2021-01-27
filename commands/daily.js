@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { checkConfigLevel, DATE_CONFIG } = require('../util');
+const { checkConfigLevel, timeString, TIME_ZONE } = require('../util');
 const { RESPONSE_FILE } = process.env;
 const moment = require('moment-timezone');
 moment.tz.setDefault('America/New_York');
@@ -30,10 +30,10 @@ module.exports = {
           return;
         }
         logger.debug(`${msg.author.username} attempting to set time to ${args[0]} for daily in guild ${guild.id}`);
-        const date = new Date(moment().format());
+        const date = new Date(moment().tz(TIME_ZONE).format());
         const [hours, minutes] = args[0].split(':');
         // eslint-disable-next-line yoda
-        if (-1 >= parseInt(hours) || parseInt(hours) >= 24 || -1 >= parseInt(minutes)
+        if (-1 >= parseInt(hours) || parseInt(hours) >= 23 || -1 >= parseInt(minutes)
           || parseInt(minutes) >= 60 || isNaN(hours) || isNaN(minutes)) {
           logger.debug(`${msg.author.username} sent invalid time ${args[0]}`);
           await handler.messageResponse(msg, responseData.errorParams);
@@ -41,7 +41,8 @@ module.exports = {
         }
         date.setHours(hours, minutes, 0);
         Guild.prototype.setDailyTime(guild.id, date.toUTCString());
-        fields.push(handler.genField('Adjustments:', `Daily time set to ${date.toLocaleTimeString()}`));
+        date.setHours(hours, minutes, 0);
+        fields.push(handler.genField('Adjustments:', `Daily time set to ${timeString(date)}`));
       }
     } else {
       logger.debug(`${msg.author.username} attempting to toggle daily in guild ${guild.id}`);
@@ -49,7 +50,7 @@ module.exports = {
       const dailyInfo = await Guild.prototype.getDaily(guild.id);
       const dateInfo = new Date(moment(dailyInfo.get('DailyTime')).format());
       logger.info(`${msg.author.username} toggled daily to ${dailyInfo.get('Daily')} in guild ${guild.id}`);
-      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${dateInfo.toLocaleTimeString()}` : 'Off';
+      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${timeString(dateInfo)}` : 'Off';
       fields.push(handler.genField('Adjustments:', `Daily set to ${dailyConfig}`));
       fields.push(handler.genField('Note:', 'If a schedule hasn\'t been sent today, it may take up to 15 mins to send'));
     }

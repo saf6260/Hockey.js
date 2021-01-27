@@ -8,15 +8,7 @@ const PERMISSION_LEVELS = {
   None: 'None',
 };
 
-const DATE_CONFIG = {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-  timeZoneName: 'short',
-};
+const TIME_ZONE = 'America/New_York';
 
 const gatherPermissions = async (level, Guild, guildID) => {
   const where = level === 'any' ? {} : { PermLevel: level };
@@ -77,7 +69,7 @@ const guildSchedule = async (client, channel, Guild, guildID, logger, Daily) => 
 };
 
 const determineOffset = async (goalTime) => {
-  const now = new Date(moment().format());
+  const now = new Date(moment().tz(TIME_ZONE).format());
   const goal = new Date(goalTime);
   goal.setDate(now.getDate());
   goal.setMonth(now.getMonth());
@@ -94,6 +86,7 @@ const performDBChecks = async (client, Guild, logger, Daily) => {
   dailys.forEach(async (daily) => {
     const guildID = daily.get('GuildID');
     const offset = await determineOffset(daily.get('DailyTime'));
+    logger.debug(`Offset is ${offset}`);
     const discChannel = client.channels.cache.get(daily.get('ChannelID'));
     if (offset <= 0) {
       logger.debug(`Daily scheduled time has passed or is now for guild ${guildID}`);
@@ -106,11 +99,33 @@ const performDBChecks = async (client, Guild, logger, Daily) => {
   });
 };
 
+const doubleDigit = (val) => {
+  return val < 10 ? `0${val}` : `${val}`;
+};
+
+const timeString = (date) => {
+  const hrs = date.getHours();
+  if (hrs === 0) {
+    return `12:${doubleDigit(date.getMinutes())}:${doubleDigit(date.getSeconds())} AM`;
+  } else if (hrs < 12) {
+    return `${hrs}:${doubleDigit(date.getMinutes())}:${doubleDigit(date.getSeconds())} AM`;
+  } else if (hrs === 12) {
+    return `12:${doubleDigit(date.getMinutes())}:${doubleDigit(date.getSeconds())} PM`;
+  }
+  return `${hrs - 12}:${doubleDigit(date.getMinutes())}:${doubleDigit(date.getSeconds())} PM`;
+};
+
+const dateTimeString = (date) => {
+  return `${date.toDateString()} @ ${timeString(date)}`;
+};
+
 module.exports = {
   PERMISSION_LEVELS,
   gatherPermissions,
   checkConfigLevel,
   checkInteraction,
   performDBChecks,
-  DATE_CONFIG,
+  dateTimeString,
+  timeString,
+  TIME_ZONE,
 };

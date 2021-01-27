@@ -1,7 +1,6 @@
 const fs = require('fs');
-const { gatherPermissions } = require('../util');
+const { gatherPermissions, TIME_ZONE, timeString } = require('../util');
 const moment = require('moment-timezone');
-moment.tz.setDefault('America/New_York');
 
 const TITLE = 'Bot Configurations';
 const DESC = 'Adjust how the bot works';
@@ -30,9 +29,9 @@ module.exports = {
     }
     const fields = [];
     fields.push(handler.genField('Announcement channel:', channelName, true));
-    const daylyTime = new Date(moment(DBGuild.get('DailyTime')).format());
+    const daylyTime = new Date(moment(DBGuild.get('DailyTime')).tz(TIME_ZONE).format());
     fields.push(handler.genField('Daily updates:',
-      DBGuild.get('Daily') ? `On @ ${daylyTime.toLocaleTimeString()} EST` : 'Off',
+      DBGuild.get('Daily') ? `On @ ${timeString(daylyTime)} EST` : 'Off',
       true));
     const rolePermissions = await gatherPermissions('any', Guild, guild.id);
     let systemRolePerms = '';

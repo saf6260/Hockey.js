@@ -3,14 +3,18 @@ const winston = require('winston');
 require('dotenv').config();
 const moment = require('moment-timezone');
 moment.tz.setDefault('America/New_York');
-const { DATE_CONFIG } = require('./util');
+const { dateTimeString } = require('./util');
 
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({ filename: 'hockey_bot_db.log', level: 'debug' }),
   ],
-  format: winston.format.printf(log => `[${log.level.toUpperCase()}] ${new Date(moment().format()).toLocaleDateString(undefined, DATE_CONFIG)} - ${log.message}`),
+  format: winston.format.printf(log => {
+    const lvl = `[${log.level.toUpperCase()}]`;
+    const date = `${dateTimeString(new Date(moment().tz('America/New_York').format()))}`;
+    return `${lvl} ${date} - ${log.message}`;
+  }),
 });
 
 const sequelize = new Sequelize(`${process.env.POSTGRES_DB}`, `${process.env.POSTGRES_USER}`, `${process.env.POSTGRES_PASSWORD}`, {
