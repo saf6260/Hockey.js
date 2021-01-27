@@ -5,12 +5,14 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const winston = require('winston');
 const fs = require('fs');
+const moment = require('moment-timezone');
+moment.tz.setDefault('America/New_York');
 
 // Other File Dependencies
 const Daily = require('./controllers/daily');
 const { Guild } = require('./db');
 const { MessageHandler } = require('./controllers/messageHandler');
-const { checkInteraction, performDBChecks } = require('./util');
+const { checkInteraction, performDBChecks, DATE_CONFIG } = require('./util');
 
 // Global Variables
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
@@ -19,13 +21,12 @@ const debug = process.argv.includes('--verbose') || process.argv.includes('-v');
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({ level: debug ? 'debug' : 'info' }),
-    new winston.transports.File({ filename: 'AL.log', level: 'debug' }),
+    new winston.transports.File({ filename: 'bot.log', level: 'debug' }),
   ],
-  format: winston.format.printf(log => `[${log.level.toUpperCase()}] ${new Date().toLocaleString()} - ${log.message}`),
+  format: winston.format.printf(log => `[${log.level.toUpperCase()}] ${new Date(moment().format()).toLocaleDateString(undefined, DATE_CONFIG)} - ${log.message}`),
 });
 const msgHandler = new MessageHandler();
 const prefix = '!';
-
 client.on('warn', (m) => logger.warn(m));
 client.on('error', (m) => logger.error(m));
 
@@ -52,7 +53,7 @@ const confiureDaily = async () => {
     logger.debug('Next day check triggered and adjusted to run tomorrow');
   }
   await performDBChecks(client, Guild, logger, daily);
-  const nextPull = new Date();
+  const nextPull = new Date(moment().format());
   nextPull.setMinutes(now.getMinutes() + 15);
   logger.debug(`Next pull at ${nextPull.toLocaleTimeString()}`);
   setTimeout(confiureDaily, (nextPull - now));

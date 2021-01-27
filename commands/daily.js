@@ -1,6 +1,8 @@
 const fs = require('fs');
-const { checkConfigLevel } = require('../util');
+const { checkConfigLevel, DATE_CONFIG } = require('../util');
 const { RESPONSE_FILE } = process.env;
+const moment = require('moment-timezone');
+moment.tz.setDefault('America/New_York');
 
 module.exports = {
   name: 'daily',
@@ -28,7 +30,7 @@ module.exports = {
           return;
         }
         logger.debug(`${msg.author.username} attempting to set time to ${args[0]} for daily in guild ${guild.id}`);
-        const date = new Date();
+        const date = new Date(moment().format());
         const [hours, minutes] = args[0].split(':');
         // eslint-disable-next-line yoda
         if (-1 >= parseInt(hours) || parseInt(hours) >= 24 || -1 >= parseInt(minutes)
@@ -39,15 +41,15 @@ module.exports = {
         }
         date.setHours(hours, minutes, 0);
         Guild.prototype.setDailyTime(guild.id, date.toUTCString());
-        fields.push(handler.genField('Adjustments:', `Daily time set to ${date.toTimeString()}`));
+        fields.push(handler.genField('Adjustments:', `Daily time set to ${date.toLocaleTimeString()}`));
       }
     } else {
       logger.debug(`${msg.author.username} attempting to toggle daily in guild ${guild.id}`);
       await Guild.prototype.toggleDaily(guild.id);
       const dailyInfo = await Guild.prototype.getDaily(guild.id);
-      const dateInfo = new Date(dailyInfo.get('DailyTime'));
+      const dateInfo = new Date(moment(dailyInfo.get('DailyTime')).format());
       logger.info(`${msg.author.username} toggled daily to ${dailyInfo.get('Daily')} in guild ${guild.id}`);
-      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${dateInfo.toTimeString()}` : 'Off';
+      const dailyConfig = dailyInfo.get('Daily') ? `On @ ${dateInfo.toLocaleTimeString()}` : 'Off';
       fields.push(handler.genField('Adjustments:', `Daily set to ${dailyConfig}`));
       fields.push(handler.genField('Note:', 'If a schedule hasn\'t been sent today, it may take up to 15 mins to send'));
     }
